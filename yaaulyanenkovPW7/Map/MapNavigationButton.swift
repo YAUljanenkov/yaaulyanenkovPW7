@@ -22,10 +22,21 @@ class MapNavigationButton : UIButton {
         switch type {
         case .blue:
             self.backgroundColor = .systemBlue
-            self.titleLabel?.textColor = .white
+            self.setTitleColor(.white, for: .normal)
         case .grey:
             self.backgroundColor = .systemGray
-            self.titleLabel?.textColor = .black
+            self.setTitleColor(.white, for: .normal)
+            self.setTitleColor(.gray, for: .disabled)
+        }
+    }
+    
+    override public var isEnabled: Bool {
+        didSet {
+            if self.isEnabled {
+                self.backgroundColor = self.backgroundColor?.withAlphaComponent(1.0)
+            } else {
+                self.backgroundColor = self.backgroundColor?.withAlphaComponent(0.8)
+            }
         }
     }
     

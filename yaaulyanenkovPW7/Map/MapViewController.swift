@@ -116,23 +116,12 @@ class MapViewController: UIViewController, MapDisplayLogic
     
     let startLocation = getField(placeholder: "From")
     let endLocation = getField(placeholder: "To")
+    var goButton: UIButton?
+    var clearButton: UIButton?
     
     private func configureUI() {
         mapView.frame = view.bounds
         view.addSubview(mapView)
-        
-        let goButton = MapNavigationButton(type: .blue)
-        goButton.setTitle( "Go", for: .normal)
-        goButton.setWidth(to: view.bounds.width * 0.45)
-        let clearButton = MapNavigationButton(type: .grey)
-        clearButton.setTitle( "Clear", for: .normal)
-        clearButton.setWidth(to: view.bounds.width * 0.45)
-        let stackView = UIStackView(arrangedSubviews: [goButton, clearButton])
-        stackView.distribution = .equalSpacing
-        stackView.axis = .horizontal
-        
-        view.addSubview(stackView)
-        stackView.pin(to: view, [.left, .bottom, .right], 16)
         
         let textStack = UIStackView()
         
@@ -145,6 +134,24 @@ class MapViewController: UIViewController, MapDisplayLogic
             textField.delegate = self
             textStack.addArrangedSubview(textField)
         }
+        
+        goButton = MapNavigationButton(type: .blue)
+        goButton?.setTitle( "Go", for: .normal)
+        goButton?.setWidth(to: view.bounds.width * 0.45)
+        clearButton = MapNavigationButton(type: .grey)
+        clearButton?.setTitle( "Clear", for: .normal)
+        clearButton?.setWidth(to: view.bounds.width * 0.45)
+        clearButton?.addTarget(self, action: #selector(clearButtonWasPressed), for: .touchUpInside)
+        guard let goButton = goButton, let clearButton = clearButton else {
+            return
+        }
+        clearButton.isEnabled = false
+        goButton.isEnabled = false
+        let stackView = UIStackView(arrangedSubviews: [goButton, clearButton])
+        stackView.distribution = .equalSpacing
+        stackView.axis = .horizontal
+        view.addSubview(stackView)
+        stackView.pin(to: view, [.left, .bottom, .right], 16)
     }
     // MARK: Routing
     
@@ -171,6 +178,15 @@ class MapViewController: UIViewController, MapDisplayLogic
     @objc func handleTap() {
         startLocation.resignFirstResponder()
         endLocation.resignFirstResponder()
+    }
+    
+    @objc func clearButtonWasPressed(button: UIButton) {
+        startLocation.text = ""
+        endLocation.text = ""
+        button.setTitleColor(.gray, for: .disabled)
+        button.isEnabled = false
+        goButton?.isEnabled = false
+        map.mapObjects.clear()
     }
     
     // MARK: Do something
@@ -209,5 +225,19 @@ extension MapViewController : UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder() // dismiss keyboard
         return true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if startLocation.text?.isEmpty ?? true && endLocation.text?.isEmpty ?? true {
+            goButton?.isEnabled = false
+            clearButton?.isEnabled = false
+        } else if !(startLocation.text?.isEmpty ?? true) && !(endLocation.text?.isEmpty ?? true)  {
+            print("worked")
+            goButton?.isEnabled = true
+            clearButton?.isEnabled = true
+        } else {
+            clearButton?.isEnabled = true
+            goButton?.isEnabled = false
+        }
     }
 }
