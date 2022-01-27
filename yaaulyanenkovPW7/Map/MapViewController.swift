@@ -12,6 +12,7 @@
 
 import UIKit
 import YandexMapsMobile
+import CoreLocation
 
 protocol MapDisplayLogic: AnyObject
 {
@@ -22,6 +23,9 @@ class MapViewController: UIViewController, MapDisplayLogic
 {
     var interactor: MapBusinessLogic?
     var router: (NSObjectProtocol & MapRoutingLogic & MapDataPassing)?
+    var locationManager: CLLocationManager?
+    var didMoveCamera = false
+    
     
     // MARK: Object lifecycle
     
@@ -43,6 +47,8 @@ class MapViewController: UIViewController, MapDisplayLogic
     
     private func setup()
     {
+        locationManager = getLocationManager()
+        locationManager?.requestWhenInUseAuthorization()
         let viewController = self
         let interactor = MapInteractor()
         let presenter = MapPresenter()
@@ -53,6 +59,17 @@ class MapViewController: UIViewController, MapDisplayLogic
         presenter.viewController = viewController
         router.viewController = viewController
         router.dataStore = interactor
+    }
+    
+    private func getLocationManager() -> CLLocationManager {
+        let locationManager = CLLocationManager()
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.delegate = self
+            locationManager.desiredAccuracy =
+            kCLLocationAccuracyNearestTenMeters
+            locationManager.startUpdatingLocation()
+        }
+        return locationManager;
     }
     
     private let mapView: YMKMapView = {
@@ -78,16 +95,56 @@ class MapViewController: UIViewController, MapDisplayLogic
         return map.cameraPosition.target
     }
     
-    private func configureUI() {
+    static func getField(placeholder: String) -> UITextField {
+        let field = UITextField()
+        field.backgroundColor = .systemGray5
+        field.textColor = .black
+        field.placeholder = placeholder
+        field.layer.cornerRadius = 2
+        field.clipsToBounds = true
         
+        field.font = UIFont.systemFont(ofSize: 15)
+        field.font = UIFont.systemFont(ofSize: 15)
+        field.borderStyle = UITextField.BorderStyle.roundedRect
+        field.autocorrectionType = UITextAutocorrectionType.yes
+        field.keyboardType = UIKeyboardType.default
+        field.returnKeyType = UIReturnKeyType.done
+        field.clearButtonMode = UITextField.ViewMode.whileEditing
+        field.contentVerticalAlignment = UIControl.ContentVerticalAlignment.center
+        return field
+    }
+    
+    let startLocation = getField(placeholder: "From")
+    let endLocation = getField(placeholder: "To")
+    
+    private func configureUI() {
         mapView.frame = view.bounds
         view.addSubview(mapView)
-        let TARGET_LOCATION = YMKPoint(latitude: 59.945933, longitude: 30.320045)
-        map.move(with:YMKCameraPosition(target: TARGET_LOCATION, zoom: 15, azimuth: 0, tilt: 0),
-                 animationType: YMKAnimation(type: YMKAnimationType.smooth, duration: 5),
-                 cameraCallback: nil)
         
+        let goButton = MapNavigationButton(type: .blue)
+        goButton.setTitle( "Go", for: .normal)
+        goButton.setWidth(to: view.bounds.width * 0.45)
+        let clearButton = MapNavigationButton(type: .grey)
+        clearButton.setTitle( "Clear", for: .normal)
+        clearButton.setWidth(to: view.bounds.width * 0.45)
+        let stackView = UIStackView(arrangedSubviews: [goButton, clearButton])
+        stackView.distribution = .equalSpacing
+        stackView.axis = .horizontal
         
+        view.addSubview(stackView)
+        stackView.pin(to: view, [.left, .bottom, .right], 16)
+        
+        let textStack = UIStackView()
+        
+        textStack.axis = .vertical
+        view.addSubview(textStack)
+        textStack.spacing = 10
+        textStack.pin(to: view, [.top: 20, .left: 10, .right: 10])
+        [startLocation, endLocation].forEach { textField in
+            textField.setHeight(to: 40)
+            textField.delegate = self
+            textStack.addArrangedSubview(textField)
+        }
     }
     // MARK: Routing
     
@@ -106,7 +163,14 @@ class MapViewController: UIViewController, MapDisplayLogic
     override func viewDidLoad()
     {
         super.viewDidLoad()
+        let tap = UITapGestureRecognizer(target: self, action: (#selector(handleTap)))
+        view.addGestureRecognizer(tap)
         doSomething()
+    }
+    
+    @objc func handleTap() {
+        startLocation.resignFirstResponder()
+        endLocation.resignFirstResponder()
     }
     
     // MARK: Do something
@@ -122,5 +186,28 @@ class MapViewController: UIViewController, MapDisplayLogic
     func displaySomething(viewModel: Map.Something.ViewModel)
     {
         //nameTextField.text = viewModel.name
+    }
+}
+
+
+extension MapViewController : CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager,
+                         didUpdateLocations locations: [CLLocation]) {
+        guard let coord: CLLocationCoordinate2D =
+                manager.location?.coordinate else { return }
+        let location = YMKPoint(latitude: coord.latitude, longitude: coord.longitude)
+        if !self.didMoveCamera {
+            self.didMoveCamera = true
+            map.move(with:YMKCameraPosition(target: location, zoom: 15, azimuth: 0, tilt: 0),
+                     animationType: YMKAnimation(type: YMKAnimationType.smooth, duration: 1),
+                     cameraCallback: nil)
+        }
+    }
+}
+
+extension MapViewController : UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder() // dismiss keyboard
+        return true
     }
 }

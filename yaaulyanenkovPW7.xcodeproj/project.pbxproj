@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		17AF0EBCE2F9AA4C4550419C /* Pods_yaaulyanenkovPW7.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C7F5BA88F3CCD8DA0170588 /* Pods_yaaulyanenkovPW7.framework */; };
+		992566AB279C895A00E20A6D /* MapNavigationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 992566AA279C895A00E20A6D /* MapNavigationButton.swift */; };
 		994615012795EE3C00864683 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 994615002795EE3C00864683 /* AppDelegate.swift */; };
 		994615032795EE3C00864683 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 994615022795EE3C00864683 /* SceneDelegate.swift */; };
 		9946150A2795EE4000864683 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 994615092795EE4000864683 /* Assets.xcassets */; };
@@ -23,6 +24,7 @@
 
 /* Begin PBXFileReference section */
 		0C7F5BA88F3CCD8DA0170588 /* Pods_yaaulyanenkovPW7.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_yaaulyanenkovPW7.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		992566AA279C895A00E20A6D /* MapNavigationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapNavigationButton.swift; sourceTree = "<group>"; };
 		994614FD2795EE3C00864683 /* yaaulyanenkovPW7.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = yaaulyanenkovPW7.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		994615002795EE3C00864683 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		994615022795EE3C00864683 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -101,6 +103,7 @@
 				994615172795EF4200864683 /* MapModels.swift */,
 				994615182795EF4200864683 /* MapViewController.swift */,
 				994615192795EF4200864683 /* MapInteractor.swift */,
+				992566AA279C895A00E20A6D /* MapNavigationButton.swift */,
 			);
 			path = Map;
 			sourceTree = "<group>";
@@ -234,6 +237,7 @@
 				9946151D2795EF4200864683 /* MapModels.swift in Sources */,
 				9946151C2795EF4200864683 /* MapRouter.swift in Sources */,
 				9946151B2795EF4200864683 /* MapWorker.swift in Sources */,
+				992566AB279C895A00E20A6D /* MapNavigationButton.swift in Sources */,
 				9946151A2795EF4200864683 /* MapPresenter.swift in Sources */,
 				9946151E2795EF4200864683 /* MapViewController.swift in Sources */,
 				9946151F2795EF4200864683 /* MapInteractor.swift in Sources */,

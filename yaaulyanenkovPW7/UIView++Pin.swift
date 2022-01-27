@@ -20,13 +20,13 @@ extension UIView {
         for side in sides {
             switch side {
             case .top:
-                pinTop(to: superView)
+                pinTop(to: superView.safeAreaLayoutGuide.topAnchor)
             case .left:
-                pinLeft(to: superView)
+                pinLeft(to: superView.safeAreaLayoutGuide.leadingAnchor)
             case .right:
-                pinRight(to: superView)
+                pinRight(to: superView.safeAreaLayoutGuide.trailingAnchor)
             case .bottom:
-                pinBottom(to: superView)
+                pinBottom(to: superView.safeAreaLayoutGuide.bottomAnchor)
             }
         }
     }
